@@ -1,0 +1,57 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  font-family: "Inter", sans-serif;
+  overflow-x: clip;
+  background: linear-gradient(160deg, #FFF4E0 0%, #FFEAC2 55%, #FFE3B3 100%);
+  background-attachment: fixed;
+  color: #1E1E24;
+}
+
+/*
+  ---break---
+*/
+
+@layer base {
+  :root {
+    --background: 39 100% 94%;
+    --foreground: 240 8% 13%;
+    --card: 40 100% 96%;
+    --card-foreground: 240 8% 13%;
+    --popover: 40 100% 96%;
+    --popover-foreground: 240 8% 13%;
+    --primary: 240 8% 13%;
+    --primary-foreground: 39 100% 94%;
+    --secondary: 36 100% 88%;
+    --secondary-foreground: 240 8% 13%;
+    --muted: 36 60% 88%;
+    --muted-foreground: 240 5% 38%;
+    --accent: 36 100% 88%;
+    --accent-foreground: 240 8% 13%;
+    --destructive: 0 72% 45%;
+    --destructive-foreground: 39 100% 94%;
+    --border: 240 8% 13%;
+    --input: 240 8% 13%;
+    --ring: 240 8% 13%;
+    --radius: 1rem;
+    --sidebar-background: 39 100% 94%;
+    --sidebar-foreground: 240 8% 13%;
+    --sidebar-primary: 240 8% 13%;
+    --sidebar-primary-foreground: 39 100% 94%;
+    --sidebar-accent: 36 100% 88%;
+    --sidebar-accent-foreground: 240 8% 13%;
+    --sidebar-border: 240 8% 13%;
+    --sidebar-ring: 240 8% 13%;
+  }
+}
+
+@layer utilities {
+  .notebook-card {
+    @apply rounded-2xl border border-foreground/10 bg-card/80 shadow-[0_2px_0_0_rgba(30,30,36,0.08)] backdrop-blur-sm;
+  }
+  .text-balance {
+    text-wrap: balance;
+  }
+}
