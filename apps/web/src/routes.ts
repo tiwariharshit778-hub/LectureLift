@@ -11,6 +11,7 @@ export default [
 		route('lectures', 'routes/dashboard.lectures.tsx'),
 		route('lectures/:id', 'routes/dashboard.lecture.$id.tsx'),
 		route('study', 'routes/dashboard.study.tsx'),
+		route('exam-booster', 'routes/dashboard.exam-booster.tsx'),
 		route('settings', 'routes/dashboard.settings.tsx'),
 	]),
 	route('sitemap.xml', 'routes/sitemap.xml.ts'),
@@ -18,6 +19,9 @@ export default [
 	route('api/health', 'routes/api.health.ts'),
 	route('api/process-lecture', 'routes/api.process-lecture.ts'),
 	route('api/integrated-ai/stream', 'routes/api.integrated-ai.stream.ts'),
+	route('api/paypal/create-order', 'routes/api.paypal.create-order.ts'),
+	route('api/paypal/capture-order', 'routes/api.paypal.capture-order.ts'),
+	route('api/paypal/exam-booster', 'routes/api.paypal.exam-booster.ts'),
 	route('api/*', 'routes/api.$.ts'),
 	route('*', 'routes/not-found.tsx'),
 ] satisfies RouteConfig;

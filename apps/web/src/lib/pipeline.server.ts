@@ -86,6 +86,34 @@ const mindMapSchema: z.ZodType<MindMapNode> = z.lazy(() =>
 	z.object({ topic: z.string(), children: z.array(mindMapSchema).optional() }),
 );
 
+const examBoosterSchema = z.object({
+	revisionSheet: z.object({
+		title: z.string(),
+		quickReview: z.string(),
+		keyPoints: z.array(z.string()).min(5),
+		keyTerms: z.array(z.object({ term: z.string(), definition: z.string() })).min(3),
+	}),
+	practiceQuestions: z.array(z.object({
+		question: z.string(),
+		answer: z.string(),
+		explanation: z.string(),
+	})).length(10),
+	threeDayPlan: z.array(z.object({
+		day: z.number().int().min(1).max(3),
+		focus: z.string(),
+		tasks: z.array(z.string()).min(1),
+	})).length(3).superRefine((days, context) => {
+		if (days.some((day, index) => day.day !== index + 1)) {
+			context.addIssue({ code: 'custom', message: 'Revision days must be ordered from 1 to 3.' });
+		}
+	}),
+});
+
+export type ExamBoosterOutput = z.infer<typeof examBoosterSchema>;
+
+export const parseExamBoosterOutput = (value: unknown): ExamBoosterOutput =>
+	examBoosterSchema.parse(value);
+
 // ---------- PocketBase helpers ----------
 
 const setStatus = (lectureId: string, status: string, errorMessage = '') =>
@@ -691,6 +719,18 @@ const generateMindMap = (transcript: string) =>
 			},
 		],
 		4096,
+	);
+
+export const generateExamBooster = (transcript: string): Promise<ExamBoosterOutput> =>
+	generateValidated(
+		examBoosterSchema,
+		[
+			transcriptBlock(transcript.slice(0, TRANSCRIPT_LIMIT)),
+			{
+				text: 'Create a useful Exam Booster based only on the lecture transcript above. Return exactly this JSON shape: {"revisionSheet":{"title":string,"quickReview":string,"keyPoints":string[] (at least 5),"keyTerms":[{"term":string,"definition":string}] (at least 3)},"practiceQuestions":[{"question":string,"answer":string,"explanation":string}] (exactly 10 questions, no options required),"threeDayPlan":[{"day":1|2|3,"focus":string,"tasks":string[]} (exactly three entries ordered day 1, day 2, day 3)]}. Make the questions distinct and test important lecture concepts. Do not invent facts absent from the transcript.',
+			},
+		],
+		8192,
 	);
 
 // ---------- Orchestration ----------

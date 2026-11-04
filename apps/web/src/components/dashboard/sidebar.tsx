@@ -1,5 +1,5 @@
 import { Link, NavLink, useNavigate } from 'react-router';
-import { BookOpen, GraduationCap, LayoutDashboard, LogOut, Settings, UploadCloud, Zap } from 'lucide-react';
+import { BookOpen, GraduationCap, LayoutDashboard, LogOut, Settings, Sparkles, UploadCloud, Zap } from 'lucide-react';
 import pb from '@/lib/pocketbase-client';
 import { useAuth } from '@/hooks/use-auth';
 import { cn } from '@/lib/utils';
@@ -9,6 +9,7 @@ const NAV = [
 	{ to: '/dashboard/upload', label: 'Upload', icon: UploadCloud, end: false },
 	{ to: '/dashboard/lectures', label: 'My Lectures', icon: BookOpen, end: false },
 	{ to: '/dashboard/study', label: 'Study', icon: Zap, end: false },
+	{ to: '/dashboard/exam-booster', label: 'Exam Booster', icon: Sparkles, end: false },
 	{ to: '/dashboard/settings', label: 'Settings', icon: Settings, end: false },
 ];
 

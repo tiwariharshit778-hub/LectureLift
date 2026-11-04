@@ -1,7 +1,7 @@
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { reactRouter } from '@react-router/dev/vite';
-import { defineConfig } from 'vite';
+import { defineConfig, type PluginOption } from 'vite';
 import { AllowedEditorOrigins } from './plugins/horizons-runtime/editor-origins.js';
 import horizonsRuntimePlugin from './plugins/horizons-runtime/vite-plugin-horizons-runtime.js';
 import sessionJournalPlugin from './plugins/session-journal/vite-plugin-session-journal.js';
@@ -15,6 +15,15 @@ import pocketbaseAuthPlugin from './plugins/vite-plugin-pocketbase-auth.js';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const monorepoRoot = path.resolve(__dirname, '../..');
 const isDev = process.env.NODE_ENV !== 'production';
+const devPlugins: PluginOption[] = isDev
+	? [
+			inlineEditPlugin() as PluginOption,
+			editModeDevPlugin(),
+			iframeRouteRestorationPlugin(),
+			pocketbaseAuthPlugin(),
+			sessionJournalPlugin(),
+		]
+	: [];
 
 export default defineConfig({
 	server: {
@@ -43,15 +52,7 @@ export default defineConfig({
 	},
 	plugins: [
 		horizonsLoggerPlugin(),
-		...(isDev
-			? [
-				inlineEditPlugin(),
-				editModeDevPlugin(),
-				iframeRouteRestorationPlugin(),
-				pocketbaseAuthPlugin(),
-				sessionJournalPlugin(),
-			]
-			: []),
+		...devPlugins,
 		horizonsRuntimePlugin(),
 		devHeadersPlugin(),
 		reactRouter(),
