@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router';
-import { AlertTriangle, BookOpenCheck, CheckCircle2, CreditCard, Loader2, LockKeyhole, RotateCcw, Sparkles } from 'lucide-react';
+import { AlertTriangle, BookOpenCheck, CalendarDays, Check, CheckCircle2, CircleHelp, CreditCard, FileText, KeyRound, Loader2, LockKeyhole, RotateCcw, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import pb from '@/lib/pocketbase-client';
 
@@ -73,7 +73,7 @@ const requestJson = async <T,>(path: string, body: Record<string, string>, token
 const getApiMessage = (error: unknown) =>
 	error instanceof Error ? error.message : 'Something went wrong. Please retry.';
 
-export function ExamBooster({ lectureId }: { lectureId: string }) {
+export function ExamBooster({ lectureId, lectureTitle }: { lectureId: string; lectureTitle: string }) {
 	const location = useLocation();
 	const navigate = useNavigate();
 	const [state, setState] = useState<BoosterState>('checking');
@@ -266,10 +266,11 @@ export function ExamBooster({ lectureId }: { lectureId: string }) {
 	};
 
 	const busy = ['checking', 'creating-order', 'redirecting', 'capturing', 'generating'].includes(state);
+	const outputId = `exam-booster-output-${lectureId}`;
 
 	return (
 		<section aria-labelledby="exam-booster-title" className="notebook-card overflow-hidden border-l-4 border-l-foreground">
-			<div className="grid gap-4 p-4 sm:p-5 md:grid-cols-[minmax(0,1fr)_auto] md:items-center md:gap-6">
+			<div className="grid gap-5 p-4 sm:p-6 lg:grid-cols-[minmax(0,1fr)_16rem] lg:items-start lg:gap-6">
 				<div className="flex min-w-0 items-start gap-3">
 					<div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-foreground text-background shadow-sm">
 						<Sparkles className="h-5 w-5" />
@@ -286,42 +287,71 @@ export function ExamBooster({ lectureId }: { lectureId: string }) {
 							) : null}
 						</div>
 						<p className="mt-1 max-w-2xl text-sm leading-5 text-muted-foreground">
-							Personalized revision sheet, 10 explained practice questions, and a focused three-day plan.
+							Personalized exam preparation built from this lecture, with focused review and practice for what was actually taught.
 						</p>
+						<div className="mt-4 rounded-xl border border-foreground/10 bg-secondary/35 px-3.5 py-3">
+							<p className="text-[11px] font-extrabold uppercase tracking-wide text-muted-foreground">For this lecture</p>
+							<p className="mt-1 break-words font-bold leading-snug">{lectureTitle}</p>
+						</div>
+						<ul className="mt-4 grid gap-2 sm:grid-cols-2" aria-label="Included in the Exam Booster">
+							<li className="flex min-w-0 items-center gap-2 text-sm font-semibold">
+								<FileText className="h-4 w-4 shrink-0 text-primary" /> Smart Revision Sheet
+							</li>
+							<li className="flex min-w-0 items-center gap-2 text-sm font-semibold">
+								<KeyRound className="h-4 w-4 shrink-0 text-primary" /> Key Terms Explained
+							</li>
+							<li className="flex min-w-0 items-center gap-2 text-sm font-semibold">
+								<CircleHelp className="h-4 w-4 shrink-0 text-primary" /> 10 Practice Questions
+							</li>
+							<li className="flex min-w-0 items-center gap-2 text-sm font-semibold">
+								<CalendarDays className="h-4 w-4 shrink-0 text-primary" /> Focused 3-Day Revision Plan
+							</li>
+						</ul>
 					</div>
 				</div>
 
-				<div className="flex flex-col gap-3 sm:flex-row sm:items-center md:justify-end">
+				<div className="flex min-w-0 flex-col gap-3 lg:pt-1">
+					<div className="flex min-w-0 flex-wrap items-center justify-between gap-3 rounded-xl border border-foreground/10 bg-background/65 px-3.5 py-3">
+						<div className="leading-tight">
+							<p className="text-[11px] font-bold text-muted-foreground">One-time purchase</p>
+							<p className="mt-1 text-xl font-extrabold">US$1.00</p>
+						</div>
+						<div className="inline-flex shrink-0 items-center gap-2 rounded-lg bg-[#EAF2FC] px-3 py-2" aria-label="PayPal checkout">
+							<CreditCard className="h-4 w-4 text-[#003087]" aria-hidden="true" />
+							<span className="text-base font-extrabold text-[#003087]">PayPal</span>
+						</div>
+					</div>
+
 					{state !== 'ready' ? (
 						<>
-							{state === 'available' || state === 'cancelled' ? (
-								<div className="flex items-center gap-2 self-start sm:self-auto">
-									<CreditCard className="h-4 w-4 text-muted-foreground" />
-									<div className="leading-tight">
-										<p className="text-sm font-extrabold">USD 1.00</p>
-										<p className="mt-0.5 text-[11px] text-muted-foreground">one-time · Sandbox demo</p>
-									</div>
-								</div>
-							) : null}
-
 							{state === 'pending' || state === 'error' ? (
-								<Button type="button" size="sm" onClick={retry} disabled={busy} className="w-full rounded-xl bg-foreground font-bold text-background hover:bg-foreground/90 sm:w-auto">
+								<Button type="button" size="sm" onClick={retry} disabled={busy} className="min-h-11 w-full rounded-xl bg-foreground px-4 font-bold text-background hover:bg-foreground/90">
 									{busy ? <Loader2 className="animate-spin" /> : <RotateCcw />}
 									{pendingOrderId ? 'Retry payment verification' : hasPurchase ? 'Retry Exam Booster' : 'Check purchase status'}
 								</Button>
 							) : (
-								<Button type="button" size="sm" onClick={createOrder} disabled={busy || state === 'checking' || state === 'cancelled' && !message} className="w-full rounded-xl bg-foreground font-bold text-background hover:bg-foreground/90 sm:w-auto">
+								<Button type="button" size="sm" onClick={createOrder} disabled={busy || state === 'checking' || state === 'cancelled' && !message} className="min-h-11 w-full rounded-xl bg-foreground px-4 font-bold text-background hover:bg-foreground/90">
 									{busy ? <Loader2 className="animate-spin" /> : <LockKeyhole />}
 									{state === 'checking' ? 'Checking purchase…'
 										: state === 'creating-order' ? 'Preparing checkout…'
 											: state === 'redirecting' ? 'Opening PayPal…'
 												: state === 'capturing' ? 'Verifying payment…'
 													: state === 'generating' ? 'Generating pack…'
-														: 'Get Exam Booster'}
+															: state === 'cancelled' ? 'Try PayPal checkout again' : 'Continue with PayPal'}
 								</Button>
 							)}
+							<p className="text-center text-[11px] leading-4 text-muted-foreground">
+								PayPal Sandbox checkout · Test transaction only · No real money charged
+							</p>
 						</>
-					) : null}
+					) : (
+						<a
+							href={`#${outputId}`}
+							className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-foreground px-4 text-sm font-bold text-background transition-colors hover:bg-foreground/90"
+						>
+							<BookOpenCheck className="h-4 w-4" /> View Your Exam Booster
+						</a>
+					)}
 				</div>
 			</div>
 
@@ -333,7 +363,7 @@ export function ExamBooster({ lectureId }: { lectureId: string }) {
 			) : null}
 
 			{output ? (
-				<div className="space-y-5 border-t border-foreground/10 bg-secondary/20 p-4 sm:p-6">
+				<div id={outputId} className="space-y-5 border-t border-foreground/10 bg-secondary/20 p-4 sm:p-6">
 					<article className="rounded-2xl border border-foreground/10 bg-background p-5">
 						<h3 className="flex items-center gap-2 text-base font-extrabold">
 							<BookOpenCheck className="h-4 w-4 text-primary" /> {output.revisionSheet.title}

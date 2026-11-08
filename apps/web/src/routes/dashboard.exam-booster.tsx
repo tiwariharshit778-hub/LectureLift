@@ -205,23 +205,6 @@ export default function ExamBoosterPage() {
 				</div>
 			</section>
 
-			<section className="relative overflow-hidden rounded-3xl border border-primary/15 bg-secondary/60 p-6 sm:p-9">
-				<div className="absolute -right-8 -top-10 h-40 w-40 rounded-full bg-primary/10 blur-2xl" />
-				<div className="relative flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
-					<div className="max-w-2xl">
-						<p className="text-xs font-extrabold uppercase tracking-[0.14em] text-primary">Learning doesn&apos;t stop at AI.</p>
-						<h2 className="mt-2 text-2xl font-extrabold tracking-tight">Live Mentorship</h2>
-						<p className="mt-2 text-sm leading-6 text-muted-foreground">
-							Learn directly from experienced mentors, ask questions and get guidance beyond your classroom.
-						</p>
-					</div>
-					<div className="inline-flex w-fit shrink-0 items-center gap-2 rounded-full border border-foreground/10 bg-background/80 px-4 py-2 text-xs font-extrabold tracking-[0.1em] text-foreground/70">
-						<UsersRound className="h-4 w-4 text-primary" />
-						COMING SOON
-					</div>
-				</div>
-			</section>
-
 			<section id="exam-booster-library" className="scroll-mt-8 space-y-5" aria-labelledby="library-heading">
 				<div className="flex flex-wrap items-end justify-between gap-3">
 					<div>
@@ -281,7 +264,7 @@ export default function ExamBoosterPage() {
 								Back to library
 							</Button>
 						</div>
-						<ExamBooster key={selectedLecture.id} lectureId={selectedLecture.id} />
+						<ExamBooster key={selectedLecture.id} lectureId={selectedLecture.id} lectureTitle={selectedLecture.title} />
 					</div>
 				) : null}
 
@@ -352,6 +335,23 @@ export default function ExamBoosterPage() {
 						})}
 					</div>
 				)}
+			</section>
+
+			<section className="flex flex-col gap-3 rounded-2xl border border-foreground/10 bg-card/45 px-4 py-4 sm:flex-row sm:items-center sm:justify-between sm:px-5">
+				<div className="flex min-w-0 items-start gap-3">
+					<span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-secondary text-muted-foreground">
+						<UsersRound className="h-4 w-4" />
+					</span>
+					<div className="min-w-0">
+						<h2 className="font-bold">Live Mentorship</h2>
+						<p className="mt-0.5 text-sm text-muted-foreground">
+							Guidance from experienced mentors, coming soon.
+						</p>
+					</div>
+				</div>
+				<span className="inline-flex w-fit shrink-0 items-center rounded-full border border-foreground/10 bg-background/70 px-3 py-1 text-[11px] font-extrabold uppercase tracking-wide text-muted-foreground">
+					Coming soon
+				</span>
 			</section>
 		</div>
 	);

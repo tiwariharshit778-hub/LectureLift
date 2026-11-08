@@ -1,0 +1,65 @@
+name: lecturelift
+
+services:
+  lecturelift-web:
+    build:
+      context: ../..
+      dockerfile: deploy/lecturelift/Dockerfile.web
+    image: lecturelift-web:local
+    restart: unless-stopped
+    env_file:
+      - /etc/lecturelift/web.env
+    environment:
+      NODE_ENV: production
+      HOST: 0.0.0.0
+      PORT: "3000"
+      POCKETBASE_URL: "http://lecturelift-pocketbase:8090"
+    expose:
+      - "3000"
+    depends_on:
+      lecturelift-pocketbase:
+        condition: service_healthy
+    networks:
+      - deploy
+    deploy:
+      resources:
+        limits:
+          cpus: "0.75"
+          memory: 1G
+
+  lecturelift-pocketbase:
+    build:
+      context: ../..
+      dockerfile: deploy/lecturelift/Dockerfile.pocketbase
+    image: lecturelift-pocketbase:local
+    restart: unless-stopped
+    env_file:
+      - /etc/lecturelift/pocketbase.env
+    environment:
+      NODE_ENV: production
+    expose:
+      - "8090"
+    volumes:
+      - lecturelift_pb_data:/data
+    networks:
+      - deploy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8090/api/health"]
+      interval: 20s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: 768M
+
+networks:
+  deploy:
+    external: true
+    name: deploy_default
+
+volumes:
+  lecturelift_pb_data:
+    name: lecturelift_pb_data
