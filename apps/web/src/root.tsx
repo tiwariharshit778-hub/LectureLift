@@ -1,3 +1,4 @@
+
 import {
 	data,
 	isRouteErrorResponse,
@@ -7,6 +8,7 @@ import {
 	Scripts,
 	ScrollRestoration,
 } from 'react-router';
+import type { ShouldRevalidateFunctionArgs } from 'react-router';
 import type { Route } from './+types/root';
 import stylesheet from '@/index.css?url';
 import { siteOrigin } from '@/lib/site-origin.server';
@@ -43,6 +45,31 @@ export function loader({ request }: Route.LoaderArgs) {
 		{ origin },
 		{ headers: { Link: `<${origin}/sitemap.xml>; rel="sitemap"; type="application/xml"` } },
 	);
+}
+
+/**
+ * The root loader only publishes the site's origin.
+ * It does not depend on dashboard data or mutations, so same-origin
+ * navigations to a different URL do not need to run it again.
+ *
+ * Preserve React Router's default behavior for form submissions,
+ * same-URL revalidation, and cross-origin navigations.
+ */
+export function shouldRevalidate({
+	currentUrl,
+	nextUrl,
+	formMethod,
+	defaultShouldRevalidate,
+}: ShouldRevalidateFunctionArgs) {
+	if (
+		!formMethod &&
+		currentUrl.origin === nextUrl.origin &&
+		currentUrl.href !== nextUrl.href
+	) {
+		return false;
+	}
+
+	return defaultShouldRevalidate;
 }
 
 /**
