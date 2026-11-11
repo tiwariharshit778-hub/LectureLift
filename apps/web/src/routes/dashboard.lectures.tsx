@@ -45,7 +45,11 @@ export default function Lectures() {
 		let cancelled = false;
 		(async () => {
 			try {
-				const list = await pb.collection('lectures').getFullList<LectureRecord>({ sort: '-created' });
+				const list = await pb.collection('lectures').getFullList<LectureRecord>({
+					sort: '-created',
+					fields: 'id,title,subject,created,file_type,status',
+				});
+
 				if (!cancelled) setLectures(list);
 			} catch {
 				if (!cancelled) toast.error('Could not load your lectures.');
@@ -95,7 +99,9 @@ export default function Lectures() {
 			<div className="flex flex-wrap items-end justify-between gap-4">
 				<div>
 					<h1 className="text-2xl font-extrabold tracking-tight sm:text-3xl">My Lectures</h1>
-					<p className="mt-1 text-sm text-muted-foreground">{lectures.length} lecture{lectures.length === 1 ? '' : 's'} in your library</p>
+					<p className="mt-1 text-sm text-muted-foreground">
+						{lectures.length} lecture{lectures.length === 1 ? '' : 's'} in your library
+					</p>
 				</div>
 				<Link
 					to="/dashboard/upload"
@@ -115,13 +121,21 @@ export default function Lectures() {
 						className={cn(inputClass, 'pl-10')}
 					/>
 				</div>
-				<select value={subject} onChange={(e) => setSubject(e.target.value)} className={cn(inputClass, 'sm:w-44')}>
+				<select
+					value={subject}
+					onChange={(e) => setSubject(e.target.value)}
+					className={cn(inputClass, 'sm:w-44')}
+				>
 					<option value="all">All subjects</option>
 					{subjects.map((s) => (
 						<option key={s} value={s}>{s}</option>
 					))}
 				</select>
-				<select value={status} onChange={(e) => setStatus(e.target.value as LectureStatus | 'all')} className={cn(inputClass, 'sm:w-44')}>
+				<select
+					value={status}
+					onChange={(e) => setStatus(e.target.value as LectureStatus | 'all')}
+					className={cn(inputClass, 'sm:w-44')}
+				>
 					{STATUS_OPTIONS.map((option) => (
 						<option key={option.value} value={option.value}>{option.label}</option>
 					))}
@@ -130,16 +144,25 @@ export default function Lectures() {
 
 			{loading ? (
 				<div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-					{Array.from({ length: 6 }).map((_, i) => <LectureCardSkeleton key={i} />)}
+					{Array.from({ length: 6 }).map((_, i) => (
+						<LectureCardSkeleton key={i} />
+					))}
 				</div>
 			) : filtered.length === 0 ? (
 				<EmptyState
 					icon={BookOpen}
 					title={lectures.length === 0 ? 'No lectures yet' : 'Nothing matches'}
-					body={lectures.length === 0 ? 'Upload your first recording to build your study library.' : 'Try a different search or filter.'}
+					body={
+						lectures.length === 0
+							? 'Upload your first recording to build your study library.'
+							: 'Try a different search or filter.'
+					}
 					action={
 						lectures.length === 0 ? (
-							<Link to="/dashboard/upload" className="inline-flex h-11 items-center gap-2 rounded-xl bg-foreground px-5 text-sm font-bold text-background">
+							<Link
+								to="/dashboard/upload"
+								className="inline-flex h-11 items-center gap-2 rounded-xl bg-foreground px-5 text-sm font-bold text-background"
+							>
 								<UploadCloud className="h-4 w-4" /> Upload a lecture
 							</Link>
 						) : undefined
@@ -158,7 +181,11 @@ export default function Lectures() {
 									aria-label={`Open ${lecture.title}`}
 									className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-secondary transition-colors group-hover:bg-foreground group-hover:text-background"
 								>
-									{lecture.file_type === 'video' ? <FileVideo className="h-5 w-5" /> : <FileAudio className="h-5 w-5" />}
+									{lecture.file_type === 'video' ? (
+										<FileVideo className="h-5 w-5" />
+									) : (
+										<FileAudio className="h-5 w-5" />
+									)}
 								</Link>
 								<div className="flex items-center gap-2">
 									<StatusBadge status={lecture.status} />
